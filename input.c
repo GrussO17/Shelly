@@ -28,7 +28,7 @@ int switch_inputs(char* command){
     //if no = sign, assume execute
     if (strstr(command, "=")) {
        // do variable things
-        
+       add_variable(command); 
     } else {
         //assume it is a program
         fork_and_execute(command);

@@ -4,8 +4,8 @@
 struct var{
     char* name;
     enum types {
-        integer,
-        str
+        Integer,
+        Str
     } type;
     union values {
         char* str_value;
@@ -16,3 +16,4 @@ struct var{
 var* vars;
 
 int add_variable(char* arg); 
+int display_all_vars();
