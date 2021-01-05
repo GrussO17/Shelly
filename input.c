@@ -20,15 +20,13 @@ int query_input(){
 
 int switch_inputs(char* command){
 
-    //here is where i decide what is happening
     trim_whitespace(command);    
-
-    printf("trimmed %s\n", command);
 
     //if no = sign, assume execute
     if (strstr(command, "=")) {
-       // do variable things
-       add_variable(command); 
+        // do variable things
+        add_variable(command);
+        display_all_vars();    
     } else {
         //assume it is a program
         fork_and_execute(command);

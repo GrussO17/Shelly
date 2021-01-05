@@ -13,7 +13,8 @@ struct var{
     }value;
 } typedef var;
 
-var* vars;
+int vars_len;
+var** vars;
 
 int add_variable(char* arg); 
 int display_all_vars();
