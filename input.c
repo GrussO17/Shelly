@@ -19,11 +19,11 @@ int query_input(){
 }
 
 int switch_inputs(char* command){
-
+    
     trim_whitespace(command);    
-
+    printf("trimmed '%s'\n", command);
     //if no = sign, assume execute
-    if (strstr(command, "=")) {
+    if (strchr(command, '=')) {
         // do variable things
         add_variable(command);
         display_all_vars();    
@@ -38,23 +38,20 @@ int switch_inputs(char* command){
 //remove space from front and back by maninpulating given string
 int trim_whitespace(char* param){
 
-    //leading trim
-    char* temp = malloc(strlen(param));
-    void* alloc = temp;// for freeing.
-    strncpy(temp, param, strlen(param));
-    while( iswspace(*temp) ){
-        temp++;
+    int start = 0, end = strlen(param) - 1;
+    while( iswspace(param[start]) ){
+        start++;
     }
     //tailling trim
-    int last = strlen(temp) - 1;
-    while ( iswspace(temp[last]) ){
-        last --;
+    while ( iswspace(param[end]) ){
+        end--;
     }
-    last ++;
-    bzero(param, MAX_LINE);
-    strncpy(param, temp, last);
-    printf("return: '%s'\n", param); 
-    free(alloc);
+    char* new_str = malloc(end - start + 2);
+    memcpy(new_str, param + start, end-start + 1);
+    new_str[end-start+1] = '\0';
+    param = realloc(param, end - start + 2);
+    memcpy(param, new_str, end-start + 2);
+    free(new_str); 
     return 1;
 }
 
