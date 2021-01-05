@@ -4,7 +4,7 @@ WALL=-Wall
 
 
 exec: main.o input.o fork_exec.o variables.o
-    gcc $(WALL) -std=c99 $(GDB) main.o input.o fork_exec.o variables.o -o exec
+    gcc $(WALL) -std=c99 $(GDB) main.o input.o fork_exec.o variables.o -o
 
 main.o: main.c main.h variables.h
     gcc $(WALL) -std=$(STD) $(GDB) main.c -c main.o

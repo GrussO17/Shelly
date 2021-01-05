@@ -20,3 +20,4 @@ var** vars;
 int add_variable(char* arg); 
 int display_all_vars();
 int init_variables();
+

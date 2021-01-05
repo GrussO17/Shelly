@@ -13,30 +13,31 @@ int query_input(){
     char* str = malloc(MAX_LINE);
     fgets(str, MAX_LINE, stdin);
     
-    switch_inputs(str);
+    seperate_expressions(str);
+    display_all_vars();
     free(str);
     return 1;
 }
 
-int switch_inputs(char* command){
-    
-    trim_whitespace(command);    
-    printf("trimmed '%s'\n", command);
+int evaluate_expression(char* expr){
+    printf("pre-trimmed '%s'\n", expr); 
+    expr = trim_whitespace(expr);    
+    printf("trimmed '%s'\n", expr);
     //if no = sign, assume execute
-    if (strchr(command, '=')) {
+    if (strchr(expr, '=')) {
         // do variable things
-        add_variable(command);
-        display_all_vars();    
+        add_variable(expr);
+        //display_all_vars();    
     } else {
         //assume it is a program
-        fork_and_execute(command);
+        fork_and_execute(expr);
     }
 
     return 1;
 }
 
-//remove space from front and back by maninpulating given string
-int trim_whitespace(char* param){
+//returns pointer to start within original string.
+char* trim_whitespace(char* param){
 
     int start = 0, end = strlen(param) - 1;
     while( iswspace(param[start]) ){
@@ -46,13 +47,29 @@ int trim_whitespace(char* param){
     while ( iswspace(param[end]) ){
         end--;
     }
-    char* new_str = malloc(end - start + 2);
-    memcpy(new_str, param + start, end-start + 1);
-    new_str[end-start+1] = '\0';
-    param = realloc(param, end - start + 2);
-    memcpy(param, new_str, end-start + 2);
-    free(new_str); 
+    param[end+1] = '\0';
+    return param+start;
+}
+
+//calls the perspective expression functions for each expression evalutation.
+
+//also return is the number of expressions.
+int seperate_expressions(char* command) {
+
+    //check for &&, if present then split on them and call seperate expressions on each.
+    char* split_loc;
+    if ((split_loc = strstr(command, "&&")) != NULL) {
+        *split_loc = '\0';
+        seperate_expressions(command); //first expression
+        seperate_expressions(split_loc + 2);
+    } else {
+        evaluate_expression(command);
+    }
     return 1;
 }
+
+
+
+
 
 

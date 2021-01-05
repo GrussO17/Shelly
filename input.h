@@ -1,4 +1,5 @@
 
 int query_input();
-int switch_inputs(char* command);
-int trim_whitespace(char* param);
+int evaluate_expression(char* expr);
+char* trim_whitespace(char* param);
+int seperate_expressions(char* command);
