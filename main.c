@@ -10,7 +10,9 @@ int main(){
     //fork_and_execute();
     init_variables();
     while (1) {
-        query_input();
+        if (query_input() == -1) {
+            break;
+        }
     }
     return 0;
 }

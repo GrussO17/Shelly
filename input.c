@@ -12,15 +12,21 @@ int query_input() {
     printf("Prompt: ");
     char* str = malloc(MAX_LINE);
     fgets(str, MAX_LINE, stdin);
-    seperate_expressions(str);
+    if (strlen(str) == 0 || seperate_expressions(str) == -1) {
+        return -1;
+    }
     free(str);
     return 1;
 }
 
 int evaluate_expression(char* expr) {
-    expr = trim_whitespace(expr);    
-    if (check_keywords(expr)) {//check first word for keyword 
+    expr = trim_whitespace(expr);  
+    int keyword_check = 0;
+    if ((keyword_check = check_keywords(expr)) == 1) {//check first word for keyword 
         return 1; // expression done   
+    } else if (keyword_check == -1) {
+        //quit
+        return -1;
     } 
     //if no = sign, assume execute
     if (strchr(expr, '=')) {
@@ -36,18 +42,21 @@ int evaluate_expression(char* expr) {
 }
 
 int check_keywords(char* expr) {
-    char* ret;
-    if((ret = strstr(expr, "print")) != NULL && ret == expr) {
+    char* ret = NULL;
+    if ((ret = strstr(expr, "print")) != NULL && ret == expr) {
         printf("The keyword print check result %s\n", ret);
         if (strlen(expr) > 5) {
             // check for variable name after.
             char* name = trim_whitespace(expr + 5);
             var* to_print = find_var(name);
-            print_var(to_print); 
+            print_var(to_print);
         } else {
             display_all_vars();
-        }
+        } 
         return 1;
+    } else if ((ret = strstr(expr, "quit")) != NULL && ret == expr) {
+        printf("The keyword print check result %s\n", ret);
+        return -1;
     }
     return 0;
 }
@@ -76,10 +85,14 @@ int seperate_expressions(char* command) {
     char* split_loc;
     if ((split_loc = strstr(command, "&&")) != NULL) {
         *split_loc = '\0';
-        seperate_expressions(command); //first expression
-        seperate_expressions(split_loc + 2);
+        if (seperate_expressions(command) == -1 ||  
+            seperate_expressions(split_loc + 2) == -1){
+            return -1;
+        }
     } else {
-        evaluate_expression(command);
+        if (evaluate_expression(command) == -1) {
+            return -1;
+        }
     }
     return 1;
 }
