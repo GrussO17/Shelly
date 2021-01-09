@@ -7,22 +7,21 @@
 #include "variables.h"
 #include "fork_exec.h"
 
-int query_input(){
+int query_input() {
 
     printf("Prompt: ");
     char* str = malloc(MAX_LINE);
     fgets(str, MAX_LINE, stdin);
-    
     seperate_expressions(str);
-    display_all_vars();
     free(str);
     return 1;
 }
 
-int evaluate_expression(char* expr){
-    printf("pre-trimmed '%s'\n", expr); 
+int evaluate_expression(char* expr) {
     expr = trim_whitespace(expr);    
-    printf("trimmed '%s'\n", expr);
+    if (check_keywords(expr)) {//check first word for keyword 
+        return 1; // expression done   
+    } 
     //if no = sign, assume execute
     if (strchr(expr, '=')) {
         // do variable things
@@ -36,15 +35,32 @@ int evaluate_expression(char* expr){
     return 1;
 }
 
+int check_keywords(char* expr) {
+    char* ret;
+    if((ret = strstr(expr, "print")) != NULL && ret == expr) {
+        printf("The keyword print check result %s\n", ret);
+        if (strlen(expr) > 5) {
+            // check for variable name after.
+            char* name = trim_whitespace(expr + 5);
+            var* to_print = find_var(name);
+            print_var(to_print); 
+        } else {
+            display_all_vars();
+        }
+        return 1;
+    }
+    return 0;
+}
+
 //returns pointer to start within original string.
-char* trim_whitespace(char* param){
+char* trim_whitespace(char* param) {
 
     int start = 0, end = strlen(param) - 1;
-    while( iswspace(param[start]) ){
+    while( iswspace(param[start]) ) {
         start++;
     }
     //tailling trim
-    while ( iswspace(param[end]) ){
+    while ( iswspace(param[end]) ) {
         end--;
     }
     param[end+1] = '\0';

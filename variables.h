@@ -20,4 +20,5 @@ var** vars;
 int add_variable(char* arg); 
 int display_all_vars();
 int init_variables();
-
+int print_var(var* variable);
+var* find_var(char* name);
