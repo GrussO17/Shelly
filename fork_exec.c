@@ -51,15 +51,21 @@ int check_for_redirects(char* param) {
 int execute(char* path) {
     //call exec
     printf("Fork_and_execute: '%s' \n", path);
-    int result = execl(path, path);
-    printf("exec result %d, error %s\n", result, strerror(errno));
-    return 0;
+    char* argv[80];
+    int count = 0;
+    char* temp;
+    argv[0] = strtok(path, " ");
+    while ((temp = strtok(NULL, " ")) != NULL) {
+        argv[++count] = temp;
+    }
+    int result = execv(path, argv);
+    printf("result %d\n", result);
+    return result;
 }
 
 int find_in_path(char* executable) {
     //check for variable named PATH
     var* path;
-    char* temp;
     if ((path = find_var("PATH")) != NULL) {
         //split path on :
         char* token = strtok(path->value.str_value, ":");
@@ -72,11 +78,14 @@ int find_in_path(char* executable) {
             if (space != NULL) {
                 *space = '\0';
                 if (file_exists(full_path)) {
+                    *space = ' ';
+                    printf("executing %s\n", full_path);
                     execute(full_path);
                     return 1;
                 }
             } else {
                 if (file_exists(full_path)) {
+                    printf("executing %s\n", full_path);
                     execute(full_path);
                     return 1;
                 }
