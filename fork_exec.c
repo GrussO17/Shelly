@@ -44,6 +44,22 @@ int check_for_redirects(char* param) {
         freopen(file_path, "w", stdout);
         execute(executable);
         return 1;
+    } else if ((special_char = strstr(param, "|")) != NULL) {
+        char* temp_file = "/tmp/shellys";
+        *special_char = '\0';
+        char* first_exec = trim_whitespace(param);
+        char* second_exec = trim_whitespace(special_char + 1);
+        printf("First exec '%s', second exec '%s'", first_exec, second_exec);
+        freopen(temp_file, "w", stdout);
+        if (!find_in_path(first_exec)) {
+            execute(first_exec);
+        }
+        freopen("/dev/stdout", "w", stdout);
+        printf("is stdout printing fixed");
+        freopen(temp_file, "r", stdin);
+        if (!find_in_path(second_exec)) {
+            execute(second_exec);
+        }
     }
     return 0;
 }
