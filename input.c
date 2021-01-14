@@ -10,8 +10,9 @@
 
 int query_input() {
 
-    char dir[80];
-    getcwd(dir, 80);
+    char wd[100];
+    getcwd(wd, 80);
+    char* dir = get_dir_from_wd(wd);
     printf("Prompt(%s): ", dir);
     char* str = malloc(MAX_LINE);
     fgets(str, MAX_LINE, stdin);
@@ -111,4 +112,10 @@ int change_dir(char* loc) {
 }
 
 
-
+char* get_dir_from_wd(char* wd) {
+    int count = strlen(wd) - 1;
+    while(wd[count] != '/') {
+        count --;
+    }
+    return wd + count + 1;
+}
