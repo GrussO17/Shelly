@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include <wctype.h>
+#include <unistd.h>
 
 #include "input.h"
 #include "variables.h"
@@ -9,7 +10,9 @@
 
 int query_input() {
 
-    printf("Prompt: ");
+    char dir[80];
+    getcwd(dir, 80);
+    printf("Prompt(%s): ", dir);
     char* str = malloc(MAX_LINE);
     fgets(str, MAX_LINE, stdin);
     if (strlen(str) == 0 || seperate_expressions(str) == -1) {
@@ -57,6 +60,9 @@ int check_keywords(char* expr) {
     } else if ((ret = strstr(expr, "quit")) != NULL && ret == expr) {
         printf("The keyword print check result %s\n", ret);
         return -1;
+    } else if ((ret = strstr(expr, "cd")) != NULL && ret == expr) {
+        strtok(expr, " ");
+        change_dir(strtok(NULL, " "));
     }
     return 0;
 }
@@ -98,7 +104,11 @@ int seperate_expressions(char* command) {
 }
 
 
-
+int change_dir(char* loc) {
+    char* param = trim_whitespace(loc);
+    chdir(param);
+    return 1;
+}
 
 
 

@@ -7,5 +7,5 @@ int execute(char* path);
 int check_for_redirects(char* param);
 
 int find_in_path(char* executable);
-
+int change_dir(char* loc);
 int file_exists(char* path);
