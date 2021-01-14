@@ -14,7 +14,10 @@ int fork_and_execute(char* path){
         //child
         if (!check_for_redirects(path)) {
             if (!find_in_path(path)) {
-                execute(path);
+                char* alloced = malloc(strlen(path) + 1);
+                strncpy(alloced, path, strlen(path));
+                execute(alloced);
+                free(alloced);
             }
         }
         exit(0); 
@@ -34,7 +37,9 @@ int check_for_redirects(char* param) {
         *special_char = '\0';
         char* executable = trim_whitespace(param);
         freopen(file_path, "a", stdout);
-        execute(executable);
+        if (!find_in_path(executable)) {
+            execute(executable);
+        }
         return 1;
     } else if ((special_char = strstr(param, ">")) != NULL) {
         //handle a redirect
@@ -42,24 +47,27 @@ int check_for_redirects(char* param) {
         *special_char = '\0';
         char* executable = trim_whitespace(param);
         freopen(file_path, "w", stdout);
-        execute(executable);
+        if (!find_in_path(executable)) {
+            execute(executable);
+        }
         return 1;
     } else if ((special_char = strstr(param, "|")) != NULL) {
         char* temp_file = "/tmp/shellys";
         *special_char = '\0';
         char* first_exec = trim_whitespace(param);
         char* second_exec = trim_whitespace(special_char + 1);
-        printf("First exec '%s', second exec '%s'", first_exec, second_exec);
+        printf("First exec '%s', second exec '%s'\n", first_exec, second_exec);
         freopen(temp_file, "w", stdout);
         if (!find_in_path(first_exec)) {
             execute(first_exec);
         }
         freopen("/dev/stdout", "w", stdout);
-        printf("is stdout printing fixed");
+        printf("is stdout printing fixed\n");
         freopen(temp_file, "r", stdin);
         if (!find_in_path(second_exec)) {
             execute(second_exec);
         }
+        return 1;
     }
     return 0;
 }
@@ -74,8 +82,9 @@ int execute(char* path) {
     while ((temp = strtok(NULL, " ")) != NULL) {
         argv[++count] = temp;
     }
+    printf("----path %s----\n----argv[0] is: %s-----\n----len %d----\n", path, argv[0], count); 
     int result = execv(path, argv);
-    printf("result %d\n", result);
+    printf("result %d, error %s\n", result, strerror(errno));
     return result;
 }
 
