@@ -42,10 +42,11 @@ int check_for_redirects(char* param) {
         }
         return 1;
     } else if ((special_char = strstr(param, ">")) != NULL) {
-        //handle a redirect
+        //handle a redirect 
         char* file_path = trim_whitespace(special_char + 2);
         *special_char = '\0';
         char* executable = trim_whitespace(param);
+        printf("file path '%s'\nexecutable '%s'\n", file_path, executable);
         freopen(file_path, "w", stdout);
         if (!find_in_path(executable)) {
             execute(executable);
@@ -76,15 +77,22 @@ int execute(char* path) {
     //call exec
     printf("Fork_and_execute: '%s' \n", path);
     char* argv[80];
-    int count = 0;
+    int count = 1;
     char* temp;
-    argv[0] = strtok(path, " ");
+    temp = strtok(path, " "); 
+    argv[0] = malloc(strlen(temp + 1));
+    
     while ((temp = strtok(NULL, " ")) != NULL) {
-        argv[++count] = temp;
+        argv[count] = malloc(strlen(temp + 1));
+        strcpy(argv[count], temp);
+        count ++;
     }
     printf("----path %s----\n----argv[0] is: %s-----\n----len %d----\n", path, argv[0], count); 
     int result = execv(path, argv);
     printf("result %d, error %s\n", result, strerror(errno));
+    for( int i = 0; i < count; i++) {
+        free(argv[i]);
+    }
     return result;
 }
 
@@ -118,6 +126,7 @@ int find_in_path(char* executable) {
             free(full_path);
         } while ((token = strtok(NULL, ":")) != NULL);
     }
+    printf("find in path failed\n");
     return 0;
 }
 
@@ -126,8 +135,10 @@ int file_exists(char* path) {
     if ((file = fopen(path, "r")))
     {
         fclose(file);
+        printf("File found to be open\n");
         return 1;
     }
+    printf("File not found\n");
     return 0;
 }
 
